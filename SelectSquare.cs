@@ -26,6 +26,9 @@ public class SelectSquare{
     public bool Inside(Vector3 quarry)
     {
         Vector2 q = new Vector2(quarry.x, quarry.z);
-        return ( ((m_vertex1 - q).x <= 0 && (m_vertex1 - q).y > 0) && (m_vertex4 - q).x > 0 && (m_vertex4 - q).y <= 0 ) || ( ((m_vertex1 - q).x > 0 && (m_vertex1 - q).y <= 0) && (m_vertex4 - q).x <= 0 && (m_vertex4 - q).y > 0 );
+        return (((m_vertex1 - q).x <= 0 && (m_vertex1 - q).y > 0) && (m_vertex4 - q).x > 0 && (m_vertex4 - q).y <= 0) ||
+            (((m_vertex1 - q).x > 0 && (m_vertex1 - q).y <= 0) && (m_vertex4 - q).x <= 0 && (m_vertex4 - q).y > 0) ||
+            (((m_vertex1 - q).x > 0 && (m_vertex1 - q).y > 0) && (m_vertex4 - q).x <= 0 && (m_vertex4 - q).y <= 0) ||
+            (((m_vertex1 - q).x <= 0 && (m_vertex1 - q).y <= 0) && (m_vertex4 - q).x > 0 && (m_vertex4 - q).y > 0);
     }
 }
