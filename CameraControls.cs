@@ -88,10 +88,15 @@ public class CameraControls : MonoBehaviour {
         {
             if (Input.GetButton("Fire1"))
             {
-                Vector3 temp = cameraToWorldDirection * rch.distance;
+                Vector3 temp = gameObject.transform.position + cameraToWorldDirection * rch.distance;
 
                 if (!m_selecting)
                 {
+                    foreach (GameObject g in m_selectedUnits)
+                    {
+                        g.GetComponent<UnitBehaviour>().Deselect();
+                    }
+                    m_selectedUnits.Clear();
                     m_selectionSquare.Vertex1 = new Vector2(temp.x, temp.z);
                     m_selecting = true;
                 }
@@ -100,6 +105,20 @@ public class CameraControls : MonoBehaviour {
                     m_selectionSquare.Vertex4 = new Vector2(temp.x, temp.z);
                     m_selectionSquare.Vertex2 = new Vector2(m_selectionSquare.Vertex4.x, m_selectionSquare.Vertex1.y);
                     m_selectionSquare.Vertex3 = new Vector2(m_selectionSquare.Vertex4.y, m_selectionSquare.Vertex1.x);
+                }
+
+                m_debugger.AppendDebugger(m_selectionSquare.Vertex1);
+                m_debugger.AppendDebugger(m_selectionSquare.Vertex2);
+                m_debugger.AppendDebugger(m_selectionSquare.Vertex3);
+                m_debugger.AppendDebugger(m_selectionSquare.Vertex4);
+
+                foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit"))
+                {
+                    m_debugger.AppendDebugger(m_selectionSquare.Inside(g.transform.position).ToString());
+                    if (m_selectionSquare.Inside(g.transform.position))
+                    {
+                        m_selectedUnits.Add(g);
+                    }
                 }
                 //switch (rch.collider.gameObject.tag)
                 //{
@@ -115,6 +134,14 @@ public class CameraControls : MonoBehaviour {
                 //        }
                 //        break;
                 //}
+            }
+            else if (Input.GetButtonUp("Fire1"))
+            {
+                m_selecting = false;
+                foreach (GameObject g in m_selectedUnits)
+                {
+                    g.GetComponent<UnitBehaviour>().Select();
+                }
             }
             else if (Input.GetButton("Fire2"))
             {

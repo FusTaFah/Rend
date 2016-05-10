@@ -8,6 +8,7 @@ public class DebugUtil : MonoBehaviour {
     Text debugText;
     //list of debug items
     List<string> debugList;
+    public GameObject placeHolder;
 
 	// Use this for initialization
 	void Start () {
@@ -25,6 +26,11 @@ public class DebugUtil : MonoBehaviour {
     public void AppendDebugger(Vector3 debugItem)
     {
         debugList.Add(debugItem.x + " " + debugItem.y + " " + debugItem.z);
+    }
+
+    public void MarkLocation(Vector3 position)
+    {
+        Instantiate(placeHolder, position, Quaternion.identity);
     }
 	
 	// Update is called once per frame
