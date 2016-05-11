@@ -13,6 +13,10 @@ public class CameraControls : MonoBehaviour {
     List<GameObject> m_selectedUnits;
     //selection square
     SelectSquare m_selectionSquare;
+    //select square texture
+    public Texture m_selectionTexture;
+    //the mouse position to start drawing the select box texture in
+    Vector2 m_InitialMousePos;
 
 	// Use this for initialization
 	void Start () {
@@ -26,6 +30,8 @@ public class CameraControls : MonoBehaviour {
         m_selectedUnits = new List<GameObject>();
         //initialise selection square
         m_selectionSquare = new SelectSquare();
+        //initialise initial mouse position
+        m_InitialMousePos = new Vector2();
 	}
 	
 	// Update is called once per frame
@@ -86,40 +92,8 @@ public class CameraControls : MonoBehaviour {
 
         if (rch.collider != null)
         {
-            if (Input.GetButton("Fire1"))
+            if (Input.GetButtonDown("Fire1"))
             {
-                Vector3 temp = gameObject.transform.position + cameraToWorldDirection * rch.distance;
-
-                if (!m_selecting)
-                {
-                    foreach (GameObject g in m_selectedUnits)
-                    {
-                        g.GetComponent<UnitBehaviour>().Deselect();
-                    }
-                    m_selectedUnits.Clear();
-                    m_selectionSquare.Vertex1 = new Vector2(temp.x, temp.z);
-                    m_selecting = true;
-                }
-                else
-                {
-                    m_selectionSquare.Vertex4 = new Vector2(temp.x, temp.z);
-                    m_selectionSquare.Vertex2 = new Vector2(m_selectionSquare.Vertex4.x, m_selectionSquare.Vertex1.y);
-                    m_selectionSquare.Vertex3 = new Vector2(m_selectionSquare.Vertex4.y, m_selectionSquare.Vertex1.x);
-                }
-
-                m_debugger.AppendDebugger(m_selectionSquare.Vertex1);
-                m_debugger.AppendDebugger(m_selectionSquare.Vertex2);
-                m_debugger.AppendDebugger(m_selectionSquare.Vertex3);
-                m_debugger.AppendDebugger(m_selectionSquare.Vertex4);
-
-                foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit"))
-                {
-                    m_debugger.AppendDebugger(m_selectionSquare.Inside(g.transform.position).ToString());
-                    if (m_selectionSquare.Inside(g.transform.position))
-                    {
-                        m_selectedUnits.Add(g);
-                    }
-                }
                 //switch (rch.collider.gameObject.tag)
                 //{
                 //    case "Unit":
@@ -135,9 +109,41 @@ public class CameraControls : MonoBehaviour {
                 //        break;
                 //}
             }
+
+            else if (Input.GetButton("Fire1"))
+            {
+                Vector3 temp = gameObject.transform.position + cameraToWorldDirection * rch.distance;
+
+                if (!m_selecting)
+                {
+                    foreach (GameObject g in m_selectedUnits)
+                    {
+                        g.GetComponent<UnitBehaviour>().Deselect();
+                    }
+                    m_selectedUnits.Clear();
+                    m_selectionSquare.Vertex1 = temp;
+                    m_selecting = true;
+                    m_InitialMousePos = Input.mousePosition;
+                }
+                else
+                {
+                    m_selectionSquare.Vertex4 = temp;
+                }
+
+                foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit"))
+                {
+                    if (m_selectionSquare.Inside(g.transform.position))
+                    {
+                        m_selectedUnits.Add(g);
+                    }
+                }
+
+                
+            }
             else if (Input.GetButtonUp("Fire1"))
             {
                 m_selecting = false;
+                m_selectionSquare = new SelectSquare();
                 foreach (GameObject g in m_selectedUnits)
                 {
                     g.GetComponent<UnitBehaviour>().Select();
@@ -156,6 +162,19 @@ public class CameraControls : MonoBehaviour {
                         break;
                 }
             }
+        }
+    }
+
+    void OnGUI()
+    {
+        if (m_selecting)
+        {
+            Vector2 rect1 = m_InitialMousePos;
+            
+            Vector2 rect2 = Input.mousePosition;
+            Rect r = new Rect(rect1.x, Screen.height - rect1.y, rect2.x - rect1.x, (rect2.y - rect1.y));
+            //Rect r = new Rect(0, 0, 10, 10);
+            GUI.DrawTexture(r, m_selectionTexture);
         }
     }
 }
