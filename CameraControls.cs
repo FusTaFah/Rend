@@ -173,6 +173,7 @@ public class CameraControls : MonoBehaviour {
             
             Vector2 rect2 = Input.mousePosition;
             Rect r = new Rect(rect1.x, Screen.height - rect1.y, rect2.x - rect1.x, (rect2.y - rect1.y));
+            m_debugger.AppendDebugger(rect2.x + " " + rect2.y);
             //Rect r = new Rect(0, 0, 10, 10);
             GUI.DrawTexture(r, m_selectionTexture);
         }
