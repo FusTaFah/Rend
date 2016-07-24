@@ -134,6 +134,12 @@ public class CameraControls : MonoBehaviour {
                     m_selectionSquare.Vertex4 = temp;
                 }
 
+                
+
+                
+            }
+            else if (Input.GetButtonUp("Fire1"))
+            {
                 foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit"))
                 {
                     if (m_selectionSquare.Inside(g.transform.position))
@@ -142,10 +148,6 @@ public class CameraControls : MonoBehaviour {
                     }
                 }
 
-                
-            }
-            else if (Input.GetButtonUp("Fire1"))
-            {
                 m_selecting = false;
                 m_selectionSquare = new SelectSquare();
                 foreach (GameObject g in m_selectedUnits)
@@ -160,7 +162,7 @@ public class CameraControls : MonoBehaviour {
                     case "Plane":
                         //move all units towards where the mouse pointed to on the plane
                         GameObject[] units = m_selectedUnits.ToArray();
-                        m_formationManager.MoveSelectedUnits(units, gameObject.transform.position + cameraToWorldDirection * rch.distance);
+                        m_formationManager.MoveSelectedUnits(m_selectedUnits, gameObject.transform.position + cameraToWorldDirection * rch.distance);
                         //foreach (GameObject g in m_selectedUnits)
                         //{
                         //    g.GetComponent<UnitBehaviour>().Move(gameObject.transform.position + cameraToWorldDirection * rch.distance);

@@ -75,7 +75,7 @@ public class UnitBehaviour : MonoBehaviour {
         {
             Debug.Log("colliding");
             Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
-            gameObject.transform.position += directionAway * Time.deltaTime;
+            gameObject.transform.position += directionAway * Time.deltaTime * 20.0f;
         }
         
     }
