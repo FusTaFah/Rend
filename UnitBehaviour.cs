@@ -58,15 +58,25 @@ public class UnitBehaviour : MonoBehaviour {
         }
     }
     
-    //collision behaviour of this unit
-    public void OnCollisionEnter(Collision coll)
+    ////collision behaviour of this unit
+    //public void OnCollisionEnter(Collision coll)
+    //{
+    //    //if this body collides with a unit
+    //    if (coll.collider.gameObject.tag == "Unit")
+    //    {
+    //        //stop
+    //        m_movementPosition = gameObject.transform.position;
+    //        gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
+    //    }
+    //}
+    public void OnTriggerEnter(Collider coll)
     {
-        //if this body collides with a unit
-        if (coll.collider.gameObject.tag == "Unit")
+        if(coll.gameObject.tag == "Unit")
         {
-            //stop
-            m_movementPosition = gameObject.transform.position;
-            gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
+            Debug.Log("colliding");
+            Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
+            gameObject.transform.position += directionAway * Time.deltaTime;
         }
+        
     }
 }

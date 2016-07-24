@@ -20,9 +20,9 @@ public class SelectSquare{
     public bool Inside(Vector3 quarry)
     {
         Vector3 q = quarry;
-        return (((m_vertex1 - q).x <= 0 && (m_vertex1 - q).z > 0) && (m_vertex4 - q).x > 0 && (m_vertex4 - q).z <= 0) ||
-            (((m_vertex1 - q).x > 0 && (m_vertex1 - q).z <= 0) && (m_vertex4 - q).x <= 0 && (m_vertex4 - q).z > 0) ||
-            (((m_vertex1 - q).x > 0 && (m_vertex1 - q).z > 0) && (m_vertex4 - q).x <= 0 && (m_vertex4 - q).z <= 0) ||
-            (((m_vertex1 - q).x <= 0 && (m_vertex1 - q).z <= 0) && (m_vertex4 - q).x > 0 && (m_vertex4 - q).z > 0);
+        return (((m_vertex1 - q).x <= 0 && (m_vertex1 - q).z > 0) && ((m_vertex4 - q).x > 0 && (m_vertex4 - q).z <= 0)) ||
+            (((m_vertex1 - q).x > 0 && (m_vertex1 - q).z <= 0) && ((m_vertex4 - q).x <= 0 && (m_vertex4 - q).z > 0)) ||
+            (((m_vertex1 - q).x > 0 && (m_vertex1 - q).z > 0) && ((m_vertex4 - q).x <= 0 && (m_vertex4 - q).z <= 0)) ||
+            (((m_vertex1 - q).x <= 0 && (m_vertex1 - q).z <= 0) && ((m_vertex4 - q).x > 0 && (m_vertex4 - q).z > 0));
     }
 }

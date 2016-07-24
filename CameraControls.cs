@@ -17,6 +17,8 @@ public class CameraControls : MonoBehaviour {
     public Texture m_selectionTexture;
     //the mouse position to start drawing the select box texture in
     Vector2 m_InitialMousePos;
+    //the framework responsible for positioning soldiers
+    FormationManager m_formationManager;
 
 	// Use this for initialization
 	void Start () {
@@ -32,6 +34,8 @@ public class CameraControls : MonoBehaviour {
         m_selectionSquare = new SelectSquare();
         //initialise initial mouse position
         m_InitialMousePos = new Vector2();
+        //initialise the formation manager
+        m_formationManager = gameObject.GetComponent<FormationManager>();
 	}
 	
 	// Update is called once per frame
@@ -45,25 +49,25 @@ public class CameraControls : MonoBehaviour {
         m_debugger.AppendDebugger("MousePosition: " + mousePos);
 
         //if the X mouse position is less than 100 pixels to the left
-        if (mousePos.x < 100.0f)
+        if (mousePos.x < 10.0f)
         {
             //translate the newPos as 10 * Time.deltatime to the left
             newPos = new Vector3(newPos.x - 10 * Time.deltaTime, newPos.y, newPos.z);
         }
         //if the X mouse position is greater than 1200 pixels to the right
-        if (mousePos.x > 1200.0f)
+        if (mousePos.x > 1250.0f)
         {
             //translate the newPos as 10 * Time.deltatime to the right
             newPos = new Vector3(newPos.x + 10 * Time.deltaTime, newPos.y, newPos.z);
         }
         //if the Y mouse position is less than 100 pixels to the bottom
-        if (mousePos.y < 100.0f)
+        if (mousePos.y < 50.0f)
         {
             //translate the newPos as 10 * Time.deltatime backwards
             newPos = new Vector3(newPos.x, newPos.y, newPos.z - 10 * Time.deltaTime);
         }
         //if the Y mouse position is greater than 500 pixels to the top
-        if (mousePos.y > 500.0f)
+        if (mousePos.y > 520.0f)
         {
             //translate the newPos as 10 * Time.deltatime forward
             newPos = new Vector3(newPos.x, newPos.y, newPos.z + 10 * Time.deltaTime);
@@ -155,10 +159,12 @@ public class CameraControls : MonoBehaviour {
                 {
                     case "Plane":
                         //move all units towards where the mouse pointed to on the plane
-                        foreach (GameObject g in m_selectedUnits)
-                        {
-                            g.GetComponent<UnitBehaviour>().Move(gameObject.transform.position + cameraToWorldDirection * rch.distance);
-                        }
+                        GameObject[] units = m_selectedUnits.ToArray();
+                        m_formationManager.MoveSelectedUnits(units, gameObject.transform.position + cameraToWorldDirection * rch.distance);
+                        //foreach (GameObject g in m_selectedUnits)
+                        //{
+                        //    g.GetComponent<UnitBehaviour>().Move(gameObject.transform.position + cameraToWorldDirection * rch.distance);
+                        //}
                         break;
                 }
             }
@@ -172,7 +178,7 @@ public class CameraControls : MonoBehaviour {
             Vector2 rect1 = m_InitialMousePos;
             
             Vector2 rect2 = Input.mousePosition;
-            Rect r = new Rect(rect1.x, Screen.height - rect1.y, rect2.x - rect1.x, (rect2.y - rect1.y));
+            Rect r = new Rect(rect1.x, Screen.height - rect1.y, rect2.x - rect1.x, (rect1.y - rect2.y));
             m_debugger.AppendDebugger(rect2.x + " " + rect2.y);
             //Rect r = new Rect(0, 0, 10, 10);
             GUI.DrawTexture(r, m_selectionTexture);
