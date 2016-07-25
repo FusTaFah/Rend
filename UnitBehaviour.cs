@@ -69,14 +69,15 @@ public class UnitBehaviour : MonoBehaviour {
     //        gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
     //    }
     //}
-    public void OnTriggerEnter(Collider coll)
-    {
-        if(coll.gameObject.tag == "Unit")
-        {
-            Debug.Log("colliding");
-            Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
-            gameObject.transform.position += directionAway * Time.deltaTime * 20.0f;
-        }
+
+    //public void OnTriggerEnter(Collider coll)
+    //{
+    //    if(coll.gameObject.tag == "Unit")
+    //    {
+    //        Debug.Log("colliding");
+    //        Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
+    //        gameObject.transform.position += directionAway * Time.deltaTime * 20.0f;
+    //    }
         
-    }
+    //}
 }
