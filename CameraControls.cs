@@ -133,14 +133,10 @@ public class CameraControls : MonoBehaviour {
                 {
                     m_selectionSquare.Vertex4 = temp;
                 }
-
-                
-
-                
             }
             else if (Input.GetButtonUp("Fire1"))
             {
-                foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit"))
+                foreach (GameObject g in GameObject.FindGameObjectsWithTag("AllyUnit"))
                 {
                     if (m_selectionSquare.Inside(g.transform.position))
                     {
@@ -168,7 +164,7 @@ public class CameraControls : MonoBehaviour {
                         //    g.GetComponent<UnitBehaviour>().Move(gameObject.transform.position + cameraToWorldDirection * rch.distance);
                         //}
                         break;
-                    case "Unit":
+                    case "EnemyUnit":
                         foreach(GameObject g in m_selectedUnits)
                         {
                             g.GetComponent<UnitBehaviour>().Attack(rch.collider.gameObject);
