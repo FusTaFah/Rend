@@ -168,6 +168,12 @@ public class CameraControls : MonoBehaviour {
                         //    g.GetComponent<UnitBehaviour>().Move(gameObject.transform.position + cameraToWorldDirection * rch.distance);
                         //}
                         break;
+                    case "Unit":
+                        foreach(GameObject g in m_selectedUnits)
+                        {
+                            g.GetComponent<UnitBehaviour>().Attack(rch.collider.gameObject);
+                        }
+                        break;
                 }
             }
         }

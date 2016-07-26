@@ -22,8 +22,9 @@ public class FormationManager : MonoBehaviour {
             if(index >= 5)
             {
                 yOffset += 1.5f;
-                troopPosition.z += yOffset;
+                troopPosition.z = waypoint.z + yOffset;
                 index = 0;
+                leftRight = 1;
                 xOffset = 0.0f ;
             }
 

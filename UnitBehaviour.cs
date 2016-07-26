@@ -8,8 +8,12 @@ public class UnitBehaviour : MonoBehaviour {
     bool m_isSelected;
     //position the unit is to be moved to
     Vector3 m_movementPosition;
+    //range of this unit's attack
+    float m_attackRange;
+
 	// initialises the fields
 	void Start () {
+        m_attackRange = 5.0f;
         m_isSelected = false;
         m_movementPosition = gameObject.transform.position;
 	}
@@ -55,6 +59,17 @@ public class UnitBehaviour : MonoBehaviour {
         if (m_isSelected)
         {
             m_movementPosition = newPosition;
+        }
+    }
+
+    public void Attack(GameObject target)
+    {
+        if(target.transform.position.sqrMagnitude - gameObject.transform.position.sqrMagnitude > m_attackRange * m_attackRange)
+        {
+            Move(target.transform.position);
+        }else
+        {
+
         }
     }
     
