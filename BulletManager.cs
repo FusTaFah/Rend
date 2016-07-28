@@ -43,7 +43,7 @@ public class BulletManager : MonoBehaviour {
             {
                 //reset the game object
                 tr.SetActive(true);
-                //set its positioj
+                //set its position
                 tr.transform.position = position;
                 //set its rotation
                 tr.transform.rotation = rotation;

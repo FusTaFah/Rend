@@ -16,6 +16,12 @@ public class UnitBehaviour : MonoBehaviour {
     public bool m_pAllegiance;
     //states whether or not this unit is attacking
     bool m_attacking;
+    //attacking target
+    GameObject m_target;
+    //attack speed of this target
+    float m_attackSpeed;
+    //time since the last attack
+    float m_attackTimer;
 
 	// initialises the fields
 	void Start () {
@@ -25,6 +31,8 @@ public class UnitBehaviour : MonoBehaviour {
         m_movementPosition = gameObject.transform.position;
         m_bulletManager = gameObject.GetComponent<BulletManager>();
         gameObject.tag = m_pAllegiance ? "AllyUnit" : "EnemyUnit";
+        m_attackSpeed = 2.0f;
+        m_attackTimer = 0.0f;
 	}
 	
 	// Update is called once per frame
@@ -47,8 +55,20 @@ public class UnitBehaviour : MonoBehaviour {
         {
             //move towards the goal position
             //gameObject.transform.forward = directionToGoal;
-            gameObject.transform.position = (gameObject.transform.position + gameObject.transform.TransformDirection(directionToGoal * Time.deltaTime * 10.0f));
+            gameObject.transform.forward = directionToGoal;
+            //gameObject.transform.position = (gameObject.transform.position + gameObject.transform.TransformDirection(directionToGoal * Time.deltaTime * 10.0f));
+            gameObject.transform.position = (gameObject.transform.position + gameObject.transform.forward * Time.deltaTime * 10.0f);
         }
+        else if (m_attacking)
+        {
+            if(m_attackTimer > m_attackSpeed)
+            {
+                m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target.transform.position, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
+                m_attackTimer = 0.0f;
+            }
+            
+        }
+        m_attackTimer += Time.deltaTime;
     }
 
     //select this unit
@@ -84,13 +104,12 @@ public class UnitBehaviour : MonoBehaviour {
                 m_movementPosition = target.transform.position;
             }
         }
-        else
-        {
-            //m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.FromToRotation(gameObject.transform.forward, towardsTarget.normalized), towardsTarget.normalized * 10.0f, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
-            m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.FromToRotation(gameObject.transform.forward, towardsTarget.normalized), target.transform.position, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
-        }
+        m_target = target;
+        //m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.FromToRotation(gameObject.transform.forward, towardsTarget.normalized), towardsTarget.normalized * 10.0f, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
+        //m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.FromToRotation(gameObject.transform.forward, towardsTarget.normalized), target.transform.position, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
+
     }
-    
+
     ////collision behaviour of this unit
     //public void OnCollisionEnter(Collision coll)
     //{
@@ -111,6 +130,6 @@ public class UnitBehaviour : MonoBehaviour {
     //        Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
     //        gameObject.transform.position += directionAway * Time.deltaTime * 20.0f;
     //    }
-        
+
     //}
 }
