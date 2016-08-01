@@ -26,6 +26,8 @@ public class UnitBehaviour : MonoBehaviour {
     int m_health;
     //the bullet that hurts, this changes depending on the team this unit is on
     string m_damagingBullet;
+    //timer for enemy scan
+    float m_enemyInRangeScan;
 
 	// initialises the fields
 	void Start () {
@@ -39,10 +41,13 @@ public class UnitBehaviour : MonoBehaviour {
         m_attackSpeed = 2.0f;
         m_attackTimer = 0.0f;
         m_health = 10;
+        m_enemyInRangeScan = 0.0f;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        
 
         if (m_target == null)
         {
@@ -86,6 +91,25 @@ public class UnitBehaviour : MonoBehaviour {
             
         }
         m_attackTimer += Time.deltaTime;
+
+
+        if (m_enemyInRangeScan >= 2.0f && !m_attacking)
+        {
+            string enemy = m_pAllegiance ? "EnemyUnit" : "AllyUnit";
+            foreach (GameObject g in GameObject.FindGameObjectsWithTag(enemy))
+            {
+                m_enemyInRangeScan = 0.0f;
+                if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= 49.0f)
+                {
+                    Attack(g);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            m_enemyInRangeScan += Time.deltaTime;
+        }
     }
 
     //select this unit
