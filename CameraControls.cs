@@ -19,6 +19,8 @@ public class CameraControls : MonoBehaviour {
     Vector2 m_InitialMousePos;
     //the framework responsible for positioning soldiers
     FormationManager m_formationManager;
+    //reference to the selected building
+    GameObject m_selectedBuilding;
 
 	// Use this for initialization
 	void Start () {
@@ -112,6 +114,17 @@ public class CameraControls : MonoBehaviour {
                 //        }
                 //        break;
                 //}
+
+                if (m_selectedBuilding != null)
+                {
+                    m_selectedBuilding.GetComponent<PushUnitOut>().DeSelect();
+                    m_selectedBuilding = null;
+                }
+                if(rch.collider.gameObject.tag == "Building")
+                {
+                    m_selectedBuilding = rch.collider.gameObject;
+                    rch.collider.gameObject.GetComponent<PushUnitOut>().Select();
+                }
             }
 
             else if (Input.GetButton("Fire1"))

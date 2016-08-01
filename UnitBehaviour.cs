@@ -22,6 +22,10 @@ public class UnitBehaviour : MonoBehaviour {
     float m_attackSpeed;
     //time since the last attack
     float m_attackTimer;
+    //health of this unit
+    int m_health;
+    //the bullet that hurts, this changes depending on the team this unit is on
+    string m_damagingBullet;
 
 	// initialises the fields
 	void Start () {
@@ -31,12 +35,25 @@ public class UnitBehaviour : MonoBehaviour {
         m_movementPosition = gameObject.transform.position;
         m_bulletManager = gameObject.GetComponent<BulletManager>();
         gameObject.tag = m_pAllegiance ? "AllyUnit" : "EnemyUnit";
+        m_damagingBullet = m_pAllegiance ? "EnemyBullet" : "AllyBullet";
         m_attackSpeed = 2.0f;
         m_attackTimer = 0.0f;
+        m_health = 10;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (m_target == null)
+        {
+            m_attacking = false;
+        }
+
+        if (m_health <= 0)
+        {
+            Destroy(gameObject);
+        }
+
         //if the unit is selected
         if (m_isSelected)
         {
@@ -110,26 +127,28 @@ public class UnitBehaviour : MonoBehaviour {
 
     }
 
-    ////collision behaviour of this unit
-    //public void OnCollisionEnter(Collision coll)
-    //{
-    //    //if this body collides with a unit
-    //    if (coll.collider.gameObject.tag == "Unit")
-    //    {
-    //        //stop
-    //        m_movementPosition = gameObject.transform.position;
-    //        gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
-    //    }
-    //}
+    //collision behaviour of this unit
+    public void OnCollisionEnter(Collision coll)
+    {
+        
+        if(coll.gameObject.tag == m_damagingBullet)
+        {
+            m_health -= 1;
+        }
 
-    //public void OnTriggerEnter(Collider coll)
-    //{
-    //    if(coll.gameObject.tag == "Unit")
-    //    {
-    //        Debug.Log("colliding");
-    //        Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
-    //        gameObject.transform.position += directionAway * Time.deltaTime * 20.0f;
-    //    }
+        //if (coll.gameObject.tag == "Unit")
+        //{
+        //    Debug.Log("colliding");
+        //    Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
+        //    gameObject.transform.position += directionAway * Time.deltaTime * 20.0f;
+        //}
 
-    //}
+        ////if this body collides with a unit
+        //if (coll.collider.gameObject.tag == "Unit")
+        //{
+        //    //stop
+        //    m_movementPosition = gameObject.transform.position;
+        //    gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
+        //}
+    }
 }

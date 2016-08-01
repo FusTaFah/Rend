@@ -19,7 +19,7 @@ public class FormationManager : MonoBehaviour {
         int index = 0;
         foreach(GameObject unit in units)
         {
-            if(index >= 5)
+            if(index >= Mathf.Floor(Mathf.Sqrt(units.Length)))
             {
                 yOffset += 1.5f;
                 troopPosition.z = waypoint.z + yOffset;
