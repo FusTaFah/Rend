@@ -28,9 +28,19 @@ public class UnitBehaviour : MonoBehaviour {
     string m_damagingBullet;
     //timer for enemy scan
     float m_enemyInRangeScan;
+    //unit state
+    UnitState m_state;
 
-	// initialises the fields
-	void Start () {
+    enum UnitState
+    {
+        IDLE,
+        ATTACKING,
+        MOVING,
+        ATTACK_MOVING
+    }
+
+    // initialises the fields
+    void Start () {
         m_attacking = false;
         m_attackRange = 5.0f;
         m_isSelected = false;
@@ -42,30 +52,15 @@ public class UnitBehaviour : MonoBehaviour {
         m_attackTimer = 0.0f;
         m_health = 10;
         m_enemyInRangeScan = 0.0f;
+        m_state = UnitState.IDLE;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        //if the unit is selected
-        if (m_isSelected)
-        {
-            //change the colour of this unit to red
-            gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
-        }
-        else
-        {
-            //if the unit is not selected, return the unit to its original colour
-            gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
-        }
-
         if (m_target == null)
         {
             m_attacking = false;
-        }
-
-        if (m_health <= 0)
-        {
-            Destroy(gameObject);
+            m_state = UnitState.IDLE;
         }
 
         //get the direction from the current position to the goal
@@ -79,6 +74,7 @@ public class UnitBehaviour : MonoBehaviour {
             //gameObject.transform.position = (gameObject.transform.position + gameObject.transform.TransformDirection(directionToGoal * Time.deltaTime * 10.0f));
             gameObject.transform.position = (gameObject.transform.position + gameObject.transform.forward * Time.deltaTime * 10.0f);
         }
+
         if (m_attacking)
         {
             if(m_attackTimer > m_attackSpeed)
@@ -91,48 +87,58 @@ public class UnitBehaviour : MonoBehaviour {
         m_attackTimer += Time.deltaTime;
 
 
-        if (m_enemyInRangeScan >= 2.0f && !m_attacking)
+
+        if (m_state == UnitState.ATTACK_MOVING || m_state == UnitState.IDLE)
         {
-            string enemy = m_pAllegiance ? "EnemyUnit" : "AllyUnit";
-            bool enemyFound = false;
-            foreach (GameObject g in GameObject.FindGameObjectsWithTag(enemy))
+            if (m_enemyInRangeScan >= 2.0f)
             {
-                m_enemyInRangeScan = 0.0f;
-                if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= 49.0f)
+                string enemy = m_pAllegiance ? "EnemyUnit" : "AllyUnit";
+                bool enemyFound = false;
+                foreach (GameObject g in GameObject.FindGameObjectsWithTag(enemy))
                 {
-                    Attack(g);
-                    enemyFound = true;
-                    break;
+                    m_enemyInRangeScan = 0.0f;
+                    if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= 49.0f)
+                    {
+                        Attack(g);
+                        enemyFound = true;
+                        break;
+                    }
+                }
+                if (!enemyFound)
+                {
+                    Debug.Log("Out of range");
+                    m_attacking = false;
                 }
             }
-            if (!enemyFound)
+            else
             {
-                Debug.Log("Out of range");
-                m_attacking = false;
+                m_enemyInRangeScan += Time.deltaTime;
             }
         }
-        else
-        {
-            m_enemyInRangeScan += Time.deltaTime;
-        }
+            
     }
 
     //select this unit
     public void Select()
     {
         m_isSelected = true;
+        //change the colour of this unit to red
+        gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
     }
 
     //deselect this unit
     public void Deselect()
     {
         m_isSelected = false;
+        //if the unit is not selected, return the unit to its original colour
+        gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
     }
 
     //set this unit's movement position
     public void Move(Vector3 newPosition)
     {
         m_attacking = false;
+        m_state = UnitState.MOVING;
         if (m_isSelected)
         {
             m_movementPosition = newPosition;
@@ -142,6 +148,7 @@ public class UnitBehaviour : MonoBehaviour {
     public void Attack(GameObject target)
     {
         m_attacking = true;
+        m_state = UnitState.ATTACKING;
         Vector3 towardsTarget = target.transform.position - gameObject.transform.position;
         if (towardsTarget.sqrMagnitude > m_attackRange * m_attackRange)
         {
@@ -163,6 +170,11 @@ public class UnitBehaviour : MonoBehaviour {
         if(coll.gameObject.tag == m_damagingBullet)
         {
             m_health -= 1;
+
+            if (m_health <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
 
         //if (coll.gameObject.tag == "Unit")
@@ -181,7 +193,4 @@ public class UnitBehaviour : MonoBehaviour {
         //}
     }
 
-    const int IDLE = 0;
-    const int ATTACKING = 1;
-    const int MOVING = 2;
 }
