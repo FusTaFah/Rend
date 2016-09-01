@@ -46,19 +46,6 @@ public class UnitBehaviour : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        
-
-        if (m_target == null)
-        {
-            m_attacking = false;
-        }
-
-        if (m_health <= 0)
-        {
-            Destroy(gameObject);
-        }
-
         //if the unit is selected
         if (m_isSelected)
         {
@@ -70,6 +57,17 @@ public class UnitBehaviour : MonoBehaviour {
             //if the unit is not selected, return the unit to its original colour
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
         }
+
+        if (m_target == null)
+        {
+            m_attacking = false;
+        }
+
+        if (m_health <= 0)
+        {
+            Destroy(gameObject);
+        }
+
         //get the direction from the current position to the goal
         Vector3 directionToGoal = (m_movementPosition - gameObject.transform.position).normalized;
         //if the unit is not already close enough to the goal
@@ -81,11 +79,11 @@ public class UnitBehaviour : MonoBehaviour {
             //gameObject.transform.position = (gameObject.transform.position + gameObject.transform.TransformDirection(directionToGoal * Time.deltaTime * 10.0f));
             gameObject.transform.position = (gameObject.transform.position + gameObject.transform.forward * Time.deltaTime * 10.0f);
         }
-        else if (m_attacking)
+        if (m_attacking)
         {
             if(m_attackTimer > m_attackSpeed)
             {
-                m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target.transform.position, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
+                m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
                 m_attackTimer = 0.0f;
             }
             
@@ -96,14 +94,21 @@ public class UnitBehaviour : MonoBehaviour {
         if (m_enemyInRangeScan >= 2.0f && !m_attacking)
         {
             string enemy = m_pAllegiance ? "EnemyUnit" : "AllyUnit";
+            bool enemyFound = false;
             foreach (GameObject g in GameObject.FindGameObjectsWithTag(enemy))
             {
                 m_enemyInRangeScan = 0.0f;
                 if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= 49.0f)
                 {
                     Attack(g);
+                    enemyFound = true;
                     break;
                 }
+            }
+            if (!enemyFound)
+            {
+                Debug.Log("Out of range");
+                m_attacking = false;
             }
         }
         else
@@ -175,4 +180,8 @@ public class UnitBehaviour : MonoBehaviour {
         //    gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
         //}
     }
+
+    const int IDLE = 0;
+    const int ATTACKING = 1;
+    const int MOVING = 2;
 }

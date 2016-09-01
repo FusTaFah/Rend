@@ -32,7 +32,7 @@ public class BulletManager : MonoBehaviour {
         }
 	}
 
-    public void SpawnBullet(Vector3 position, Quaternion rotation, Vector3 target, string bulletType)
+    public void SpawnBullet(Vector3 position, Quaternion rotation, GameObject target, string bulletType)
     {
         //not found until proven found by the following loop
         bool found = false;

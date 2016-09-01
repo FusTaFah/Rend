@@ -10,7 +10,7 @@ public class BulletSpan : MonoBehaviour {
     //the type of bullet, either AllyBullet or EnemyBullet 
     string bulletType;
     //bullet target position
-    Vector3 target;
+    GameObject target;
 
     //public set and get methods for timer
     public float Timer { get { return timer; } set { timer = value; } }
@@ -19,7 +19,7 @@ public class BulletSpan : MonoBehaviour {
     //public set and get methods for bulletType
     public string BulletType { get { return bulletType; } set { bulletType = value; } }
     //public set and get methods for target
-    public Vector3 Target { get { return target; } set { target = value; } }
+    public GameObject Target { get { return target; } set { target = value; } }
 
     // Use this for initialization
     void Start()
@@ -49,8 +49,8 @@ public class BulletSpan : MonoBehaviour {
             }
         }
 
-        gameObject.transform.forward = (target - gameObject.transform.position);
-        gameObject.transform.position += (target - gameObject.transform.position).normalized * Time.deltaTime * 20.0f;
+        gameObject.transform.forward = (target.transform.position - gameObject.transform.position);
+        gameObject.transform.position += (target.transform.position - gameObject.transform.position).normalized * Time.deltaTime * 20.0f;
     }
 
     //when the bullet collides with any collision object
