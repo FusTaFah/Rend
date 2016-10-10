@@ -38,7 +38,8 @@ public class UnitBehaviour : MonoBehaviour {
         IDLE,
         ATTACKING,
         MOVING,
-        TARGETTING
+        TARGETTING,
+        DEAD
     }
 
     // initialises the fields
@@ -60,80 +61,81 @@ public class UnitBehaviour : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        if(m_state == UnitState.MOVING)
+        if(m_state != UnitState.DEAD)
         {
-            MoveToTarget();
-        }
-
-        if (m_state == UnitState.ATTACKING)
-        {
-            if(m_target != null)
+            if (m_state == UnitState.MOVING)
             {
-                if (m_attackTimer > m_attackSpeed)
-                {
-                    m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
-                    m_attackTimer = 0.0f;
-                }
-                m_attackTimer += Time.deltaTime;
-                if ((m_target.transform.position - gameObject.transform.position).sqrMagnitude > m_attackRange * m_attackRange)
-                {
-                    m_state = UnitState.TARGETTING;
-                }
+                MoveToTarget();
             }
-            else
-            {
-                m_state = UnitState.IDLE;
-            }
-        }
 
-        if(m_state == UnitState.TARGETTING)
-        {
-            if(m_target != null)
+            if (m_state == UnitState.ATTACKING)
             {
-                m_movementPosition = m_target.transform.position;
-                if((m_target.transform.position - gameObject.transform.position).sqrMagnitude > m_attackRange * m_attackRange)
+                if (m_target != null)
                 {
-                    MoveToTarget();
+                    if (m_attackTimer > m_attackSpeed)
+                    {
+                        m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
+                        m_attackTimer = 0.0f;
+                    }
+                    m_attackTimer += Time.deltaTime;
+                    if ((m_target.transform.position - gameObject.transform.position).sqrMagnitude > m_attackRange * m_attackRange)
+                    {
+                        m_state = UnitState.TARGETTING;
+                    }
                 }
                 else
                 {
-                    m_state = UnitState.ATTACKING;
+                    m_state = UnitState.IDLE;
                 }
             }
-            else
-            {
-                m_state = UnitState.IDLE;
-            }
-        }
 
-        if (m_state == UnitState.IDLE)
-        {
-            if (m_enemyInRangeScan >= 2.0f)
+            if (m_state == UnitState.TARGETTING)
             {
-                string enemy = m_pAllegiance ? "EnemyUnit" : "AllyUnit";
-                bool enemyFound = false;
-                foreach (GameObject g in GameObject.FindGameObjectsWithTag(enemy))
+                if (m_target != null)
                 {
-                    if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= m_maxSearchRange * m_maxSearchRange)
+                    m_movementPosition = m_target.transform.position;
+                    if ((m_target.transform.position - gameObject.transform.position).sqrMagnitude > m_attackRange * m_attackRange)
                     {
-                        Attack(g);
-                        enemyFound = true;
-                        break;
+                        MoveToTarget();
+                    }
+                    else
+                    {
+                        m_state = UnitState.ATTACKING;
                     }
                 }
-                if (!enemyFound)
+                else
                 {
-                    Debug.Log("Out of range");
+                    m_state = UnitState.IDLE;
                 }
-                m_enemyInRangeScan = 0.0f;
             }
-            else
+
+            if (m_state == UnitState.IDLE)
             {
-                m_enemyInRangeScan += Time.deltaTime;
+                if (m_enemyInRangeScan >= 2.0f)
+                {
+                    string enemy = m_pAllegiance ? "EnemyUnit" : "AllyUnit";
+                    bool enemyFound = false;
+                    foreach (GameObject g in GameObject.FindGameObjectsWithTag(enemy))
+                    {
+                        if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= m_maxSearchRange * m_maxSearchRange)
+                        {
+                            Attack(g);
+                            enemyFound = true;
+                            break;
+                        }
+                    }
+                    if (!enemyFound)
+                    {
+                        Debug.Log("Out of range");
+                    }
+                    m_enemyInRangeScan = 0.0f;
+                }
+                else
+                {
+                    m_enemyInRangeScan += Time.deltaTime;
+                }
             }
         }
-            
     }
 
     void MoveToTarget()
@@ -202,7 +204,7 @@ public class UnitBehaviour : MonoBehaviour {
 
             if (m_health <= 0)
             {
-                Destroy(gameObject);
+                m_state = UnitState.DEAD;
             }
         }
 
@@ -222,4 +224,8 @@ public class UnitBehaviour : MonoBehaviour {
         //}
     }
 
+    public bool IsUnitDead()
+    {
+        return m_state == UnitState.DEAD;
+    }
 }

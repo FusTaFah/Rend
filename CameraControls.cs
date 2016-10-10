@@ -43,6 +43,30 @@ public class CameraControls : MonoBehaviour {
 	// Update is called once per frame
     void Update()
     {
+        {
+            List<GameObject> toDelete = new List<GameObject>();
+            foreach (GameObject g in GameObject.FindGameObjectsWithTag("AllyUnit"))
+            {
+                if (g.GetComponent<UnitBehaviour>().IsUnitDead())
+                {
+                    m_selectedUnits.Remove(g);
+                    toDelete.Add(g);
+                }
+            }
+            foreach (GameObject g in GameObject.FindGameObjectsWithTag("EnemyUnit"))
+            {
+                if (g.GetComponent<UnitBehaviour>().IsUnitDead())
+                {
+                    toDelete.Add(g);
+                }
+            }
+
+            foreach (GameObject g in toDelete)
+            {
+                Destroy(g);
+            }
+        }
+
         //obtain the current mouse position as pixels from the bottom left of the screen
         Vector3 mousePos = Input.mousePosition;
         //create a temporary variable to store the camera position
@@ -98,6 +122,7 @@ public class CameraControls : MonoBehaviour {
 
         if (rch.collider != null)
         {
+
             if (Input.GetButtonDown("Fire1"))
             {
                 //switch (rch.collider.gameObject.tag)
@@ -172,10 +197,6 @@ public class CameraControls : MonoBehaviour {
                         //move all units towards where the mouse pointed to on the plane
                         GameObject[] units = m_selectedUnits.ToArray();
                         m_formationManager.MoveSelectedUnits(units, gameObject.transform.position + cameraToWorldDirection * rch.distance);
-                        //foreach (GameObject g in m_selectedUnits)
-                        //{
-                        //    g.GetComponent<UnitBehaviour>().Move(gameObject.transform.position + cameraToWorldDirection * rch.distance);
-                        //}
                         break;
                     case "EnemyUnit":
                         foreach(GameObject g in m_selectedUnits)
