@@ -10,12 +10,12 @@ public class UnitBehaviour : MonoBehaviour {
     Vector3 m_movementPosition;
     //range of this unit's attack
     float m_attackRange;
+    //distance to target that is considered close enough to stop
+    float m_stoppingRange;
     //projectile firing manager
     BulletManager m_bulletManager;
     //allegiance of this unit
     public bool m_pAllegiance;
-    //states whether or not this unit is attacking
-    bool m_attacking;
     //attacking target
     GameObject m_target;
     //attack speed of this target
@@ -28,6 +28,8 @@ public class UnitBehaviour : MonoBehaviour {
     string m_damagingBullet;
     //timer for enemy scan
     float m_enemyInRangeScan;
+    //max distance an idle unit can consider an enemy unit to be in targetting range
+    float m_maxSearchRange;
     //unit state
     UnitState m_state;
 
@@ -36,13 +38,13 @@ public class UnitBehaviour : MonoBehaviour {
         IDLE,
         ATTACKING,
         MOVING,
-        ATTACK_MOVING
+        TARGETTING
     }
 
     // initialises the fields
     void Start () {
-        m_attacking = false;
         m_attackRange = 5.0f;
+        m_stoppingRange = 0.5f;
         m_isSelected = false;
         m_movementPosition = gameObject.transform.position;
         m_bulletManager = gameObject.GetComponent<BulletManager>();
@@ -52,43 +54,60 @@ public class UnitBehaviour : MonoBehaviour {
         m_attackTimer = 0.0f;
         m_health = 10;
         m_enemyInRangeScan = 0.0f;
+        m_maxSearchRange = 7.0f;
         m_state = UnitState.IDLE;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (m_target == null)
+
+        if(m_state == UnitState.MOVING)
         {
-            m_attacking = false;
-            m_state = UnitState.IDLE;
+            MoveToTarget();
         }
 
-        //get the direction from the current position to the goal
-        Vector3 directionToGoal = (m_movementPosition - gameObject.transform.position).normalized;
-        //if the unit is not already close enough to the goal
-        if ((m_movementPosition - gameObject.transform.position).magnitude >= (m_attacking ? m_attackRange : 0.5f))
+        if (m_state == UnitState.ATTACKING)
         {
-            //move towards the goal position
-            //gameObject.transform.forward = directionToGoal;
-            gameObject.transform.forward = directionToGoal;
-            //gameObject.transform.position = (gameObject.transform.position + gameObject.transform.TransformDirection(directionToGoal * Time.deltaTime * 10.0f));
-            gameObject.transform.position = (gameObject.transform.position + gameObject.transform.forward * Time.deltaTime * 10.0f);
-        }
-
-        if (m_attacking)
-        {
-            if(m_attackTimer > m_attackSpeed)
+            if(m_target != null)
             {
-                m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
-                m_attackTimer = 0.0f;
+                if (m_attackTimer > m_attackSpeed)
+                {
+                    m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
+                    m_attackTimer = 0.0f;
+                }
+                m_attackTimer += Time.deltaTime;
+                if ((m_target.transform.position - gameObject.transform.position).sqrMagnitude > m_attackRange * m_attackRange)
+                {
+                    m_state = UnitState.TARGETTING;
+                }
             }
-            
+            else
+            {
+                m_state = UnitState.IDLE;
+            }
         }
-        m_attackTimer += Time.deltaTime;
 
+        if(m_state == UnitState.TARGETTING)
+        {
+            if(m_target != null)
+            {
+                m_movementPosition = m_target.transform.position;
+                if((m_target.transform.position - gameObject.transform.position).sqrMagnitude > m_attackRange * m_attackRange)
+                {
+                    MoveToTarget();
+                }
+                else
+                {
+                    m_state = UnitState.ATTACKING;
+                }
+            }
+            else
+            {
+                m_state = UnitState.IDLE;
+            }
+        }
 
-
-        if (m_state == UnitState.ATTACK_MOVING || m_state == UnitState.IDLE)
+        if (m_state == UnitState.IDLE)
         {
             if (m_enemyInRangeScan >= 2.0f)
             {
@@ -96,8 +115,7 @@ public class UnitBehaviour : MonoBehaviour {
                 bool enemyFound = false;
                 foreach (GameObject g in GameObject.FindGameObjectsWithTag(enemy))
                 {
-                    m_enemyInRangeScan = 0.0f;
-                    if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= 49.0f)
+                    if ((g.transform.position - gameObject.transform.position).sqrMagnitude <= m_maxSearchRange * m_maxSearchRange)
                     {
                         Attack(g);
                         enemyFound = true;
@@ -107,8 +125,8 @@ public class UnitBehaviour : MonoBehaviour {
                 if (!enemyFound)
                 {
                     Debug.Log("Out of range");
-                    m_attacking = false;
                 }
+                m_enemyInRangeScan = 0.0f;
             }
             else
             {
@@ -116,6 +134,25 @@ public class UnitBehaviour : MonoBehaviour {
             }
         }
             
+    }
+
+    void MoveToTarget()
+    {
+        //get the direction from the current position to the goal
+        Vector3 directionToGoal = (m_movementPosition - gameObject.transform.position).normalized;
+        //if the unit is not already close enough to the goal
+        if ((m_movementPosition - gameObject.transform.position).magnitude >= m_stoppingRange)
+        {
+            //move towards the goal position
+            //gameObject.transform.forward = directionToGoal;
+            gameObject.transform.forward = directionToGoal;
+            //gameObject.transform.position = (gameObject.transform.position + gameObject.transform.TransformDirection(directionToGoal * Time.deltaTime * 10.0f));
+            gameObject.transform.position = (gameObject.transform.position + gameObject.transform.forward * Time.deltaTime * 10.0f);
+        }
+        else
+        {
+            m_state = UnitState.IDLE;
+        }
     }
 
     //select this unit
@@ -137,30 +174,22 @@ public class UnitBehaviour : MonoBehaviour {
     //set this unit's movement position
     public void Move(Vector3 newPosition)
     {
-        m_attacking = false;
         m_state = UnitState.MOVING;
-        if (m_isSelected)
-        {
-            m_movementPosition = newPosition;
-        }
+        m_movementPosition = newPosition;
     }
 
     public void Attack(GameObject target)
     {
-        m_attacking = true;
-        m_state = UnitState.ATTACKING;
+        m_target = target;
         Vector3 towardsTarget = target.transform.position - gameObject.transform.position;
         if (towardsTarget.sqrMagnitude > m_attackRange * m_attackRange)
         {
-            if (m_isSelected)
-            {
-                m_movementPosition = target.transform.position;
-            }
+            m_state = UnitState.ATTACKING;
         }
-        m_target = target;
-        //m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.FromToRotation(gameObject.transform.forward, towardsTarget.normalized), towardsTarget.normalized * 10.0f, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
-        //m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.FromToRotation(gameObject.transform.forward, towardsTarget.normalized), target.transform.position, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
-
+        else
+        {
+            m_state = UnitState.TARGETTING;
+        }
     }
 
     //collision behaviour of this unit
