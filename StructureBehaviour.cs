@@ -1,7 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PushUnitOut : MonoBehaviour {
+public class StructureBehaviour : MonoBehaviour {
+
+    public enum UnitType
+    {
+        FOOTSOLDIER,
+        RIFLEMAN,
+        HEAVY
+    }
 
     bool m_selected;
 
@@ -15,12 +22,9 @@ public class PushUnitOut : MonoBehaviour {
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S) && m_selected)
+        if (m_selected)
         {
-            Vector3 positionInFront = gameObject.transform.position + new Vector3(0.0f, 0.0f, 4.0f);
-            GameObject unit = Instantiate(Resources.Load("Prefabs/Unit"), positionInFront, Quaternion.identity) as GameObject;
-            unit.GetComponent<UnitBehaviour>().m_pAllegiance = true;
-            unit.GetComponent<UnitBehaviour>().Move(m_unitRallyPoint);
+            
         }
     }
 
@@ -34,11 +38,27 @@ public class PushUnitOut : MonoBehaviour {
         m_selected = false;
     }
 
+    public void SpawnUnit(UnitType unitType)
+    {
+        if(unitType == UnitType.FOOTSOLDIER)
+        {
+            Vector3 positionInFront = gameObject.transform.position + new Vector3(0.0f, 0.0f, 4.0f);
+            GameObject unit = Instantiate(Resources.Load("Prefabs/Unit"), positionInFront, Quaternion.identity) as GameObject;
+            unit.GetComponent<UnitBehaviour>().m_pAllegiance = true;
+            unit.GetComponent<UnitBehaviour>().Move(m_unitRallyPoint);
+        }
+    }
+
 	void OnTriggerEnter(Collider col)
     {
         Debug.Log("Colliding");
         Vector3 fromThisToThem = col.gameObject.transform.position - gameObject.transform.position;
         fromThisToThem.y = 0.0f;
         col.gameObject.transform.position += (fromThisToThem/* + col.gameObject.transform.forward*/).normalized/* * Time.deltaTime * 20.0f*/;
+    }
+
+    public bool IsSelected()
+    {
+        return m_selected;
     }
 }

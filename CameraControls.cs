@@ -43,29 +43,29 @@ public class CameraControls : MonoBehaviour {
 	// Update is called once per frame
     void Update()
     {
-        {
-            List<GameObject> toDelete = new List<GameObject>();
-            foreach (GameObject g in GameObject.FindGameObjectsWithTag("AllyUnit"))
-            {
-                if (g.GetComponent<UnitBehaviour>().IsUnitDead())
-                {
-                    m_selectedUnits.Remove(g);
-                    toDelete.Add(g);
-                }
-            }
-            foreach (GameObject g in GameObject.FindGameObjectsWithTag("EnemyUnit"))
-            {
-                if (g.GetComponent<UnitBehaviour>().IsUnitDead())
-                {
-                    toDelete.Add(g);
-                }
-            }
+        //{
+        //    List<GameObject> toDelete = new List<GameObject>();
+        //    foreach (GameObject g in GameObject.FindGameObjectsWithTag("AllyUnit"))
+        //    {
+        //        if (g.GetComponent<UnitBehaviour>().IsUnitDead())
+        //        {
+        //            m_selectedUnits.Remove(g);
+        //            toDelete.Add(g);
+        //        }
+        //    }
+        //    foreach (GameObject g in GameObject.FindGameObjectsWithTag("EnemyUnit"))
+        //    {
+        //        if (g.GetComponent<UnitBehaviour>().IsUnitDead())
+        //        {
+        //            toDelete.Add(g);
+        //        }
+        //    }
 
-            foreach (GameObject g in toDelete)
-            {
-                Destroy(g);
-            }
-        }
+        //    foreach (GameObject g in toDelete)
+        //    {
+        //        Destroy(g);
+        //    }
+        //}
 
         //obtain the current mouse position as pixels from the bottom left of the screen
         Vector3 mousePos = Input.mousePosition;
@@ -142,13 +142,13 @@ public class CameraControls : MonoBehaviour {
 
                 if (m_selectedBuilding != null)
                 {
-                    m_selectedBuilding.GetComponent<PushUnitOut>().DeSelect();
+                    m_selectedBuilding.GetComponent<StructureBehaviour>().DeSelect();
                     m_selectedBuilding = null;
                 }
                 if(rch.collider.gameObject.tag == "Building")
                 {
                     m_selectedBuilding = rch.collider.gameObject;
-                    rch.collider.gameObject.GetComponent<PushUnitOut>().Select();
+                    rch.collider.gameObject.GetComponent<StructureBehaviour>().Select();
                 }
             }
 
@@ -160,7 +160,10 @@ public class CameraControls : MonoBehaviour {
                 {
                     foreach (GameObject g in m_selectedUnits)
                     {
-                        g.GetComponent<UnitBehaviour>().Deselect();
+                        if(g != null)
+                        {
+                            g.GetComponent<UnitBehaviour>().Deselect();
+                        }
                     }
                     m_selectedUnits.Clear();
                     m_selectionSquare.Vertex1 = temp;
@@ -189,7 +192,7 @@ public class CameraControls : MonoBehaviour {
                     g.GetComponent<UnitBehaviour>().Select();
                 }
             }
-            else if (Input.GetButton("Fire2"))
+            if (Input.GetButton("Fire2"))
             {
                 switch (rch.collider.gameObject.tag)
                 {
@@ -201,7 +204,10 @@ public class CameraControls : MonoBehaviour {
                     case "EnemyUnit":
                         foreach(GameObject g in m_selectedUnits)
                         {
-                            g.GetComponent<UnitBehaviour>().Attack(rch.collider.gameObject);
+                            if(g != null)
+                            {
+                                g.GetComponent<UnitBehaviour>().Attack(rch.collider.gameObject);
+                            }
                         }
                         break;
                 }
@@ -221,5 +227,19 @@ public class CameraControls : MonoBehaviour {
             //Rect r = new Rect(0, 0, 10, 10);
             GUI.DrawTexture(r, m_selectionTexture);
         }
+    }
+
+    public GameObject GetSelectedUnit()
+    {
+        GameObject tempSelected = null;
+        if(m_selectedBuilding != null)
+        {
+            tempSelected = m_selectedBuilding;
+        }else if (m_selectedUnits.Count > 0)
+        {
+            GameObject[] tempArray = m_selectedUnits.ToArray();
+            tempSelected = tempArray[0];
+        }
+        return tempSelected;
     }
 }

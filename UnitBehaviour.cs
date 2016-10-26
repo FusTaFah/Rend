@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class UnitBehaviour : MonoBehaviour {
     //use the event system!
@@ -205,6 +206,7 @@ public class UnitBehaviour : MonoBehaviour {
             if (m_health <= 0)
             {
                 m_state = UnitState.DEAD;
+                Destroy(gameObject);
             }
         }
 
@@ -227,5 +229,15 @@ public class UnitBehaviour : MonoBehaviour {
     public bool IsUnitDead()
     {
         return m_state == UnitState.DEAD;
+    }
+
+    public List<string> GetAbilityList()
+    {
+        return new List<string>();
+    }
+
+    public bool IsSelected()
+    {
+        return m_isSelected;
     }
 }

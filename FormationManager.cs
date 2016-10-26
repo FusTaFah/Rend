@@ -12,28 +12,30 @@ public class FormationManager : MonoBehaviour {
     public void MoveSelectedUnits(GameObject[] units, Vector3 waypoint)
     {
         Vector3 troopPosition = waypoint;
-        Debug.Log(units.Length);
         int leftRight = 1;
         float xOffset = 0.0f;
         float yOffset = 0.0f;
         int index = 0;
         foreach(GameObject unit in units)
         {
-            if(index >= Mathf.Floor(Mathf.Sqrt(units.Length)))
+            if(unit != null)
             {
-                yOffset += 1.5f;
-                troopPosition.z = waypoint.z + yOffset;
-                index = 0;
-                leftRight = 1;
-                xOffset = 0.0f ;
-            }
+                if (index >= Mathf.Floor(Mathf.Sqrt(units.Length)))
+                {
+                    yOffset += 1.5f;
+                    troopPosition.z = waypoint.z + yOffset;
+                    index = 0;
+                    leftRight = 1;
+                    xOffset = 0.0f;
+                }
 
-            troopPosition.x = waypoint.x + xOffset * leftRight;
-            
-            unit.GetComponent<UnitBehaviour>().Move(troopPosition);
-            leftRight = -leftRight;
-            if (leftRight < 0) xOffset += 1.5f;
-            index++;
+                troopPosition.x = waypoint.x + xOffset * leftRight;
+
+                unit.GetComponent<UnitBehaviour>().Move(troopPosition);
+                leftRight = -leftRight;
+                if (leftRight < 0) xOffset += 1.5f;
+                index++;
+            }
         }
 
     }
