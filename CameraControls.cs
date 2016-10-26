@@ -120,9 +120,9 @@ public class CameraControls : MonoBehaviour {
         RaycastHit rch;
         Physics.Raycast(x, out rch);
 
-        if (rch.collider != null)
+        if (rch.collider != null && mousePos.y > Screen.height / 4.0f)
         {
-
+            
             if (Input.GetButtonDown("Fire1"))
             {
                 //switch (rch.collider.gameObject.tag)
