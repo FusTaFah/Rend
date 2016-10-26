@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class StructureBehaviour : MonoBehaviour {
 
@@ -60,5 +61,14 @@ public class StructureBehaviour : MonoBehaviour {
     public bool IsSelected()
     {
         return m_selected;
+    }
+
+    public List<string> GetAbilityList()
+    {
+        List<string> abilities = new List<string>();
+        abilities.Add("fuck");
+        abilities.Add("da");
+        abilities.Add("police");
+        return abilities;
     }
 }

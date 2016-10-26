@@ -210,12 +210,12 @@ public class UnitBehaviour : MonoBehaviour {
             }
         }
 
-        //if (coll.gameObject.tag == "Unit")
-        //{
-        //    Debug.Log("colliding");
-        //    Vector3 directionAway = -(coll.transform.position - gameObject.transform.position).normalized;
-        //    gameObject.transform.position += directionAway * Time.deltaTime * 20.0f;
-        //}
+        if (coll.gameObject.tag == "AllyUnit" || coll.gameObject.tag == "EnemyUnit")
+        {
+            Debug.Log("colliding");
+            Vector3 distanceAway = (gameObject.transform.position - coll.transform.position);
+            gameObject.transform.position += distanceAway / 2.0f;
+        }
 
         ////if this body collides with a unit
         //if (coll.collider.gameObject.tag == "Unit")
@@ -233,7 +233,11 @@ public class UnitBehaviour : MonoBehaviour {
 
     public List<string> GetAbilityList()
     {
-        return new List<string>();
+        List<string> abilities = new List<string>();
+        abilities.Add("fuck");
+        abilities.Add("da");
+        abilities.Add("police");
+        return abilities;
     }
 
     public bool IsSelected()
