@@ -2,14 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum UnitType
+{
+    FOOTSOLDIER,
+    RIFLEMAN,
+    HEAVY
+}
+
 public class StructureBehaviour : MonoBehaviour {
 
-    public enum UnitType
-    {
-        FOOTSOLDIER,
-        RIFLEMAN,
-        HEAVY
-    }
+    
 
     bool m_selected;
 
@@ -18,7 +20,7 @@ public class StructureBehaviour : MonoBehaviour {
     void Start()
     {
         Vector3 positionInFront = gameObject.transform.position + new Vector3(0.0f, 0.0f, 4.0f);
-        m_unitRallyPoint = positionInFront;
+        m_unitRallyPoint = positionInFront + new Vector3(0.0f, 0.0f, 10.0f);
     }
 
     void Update()
