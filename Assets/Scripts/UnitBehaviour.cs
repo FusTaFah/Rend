@@ -25,6 +25,8 @@ public class UnitBehaviour : MonoBehaviour {
     float m_attackTimer;
     //health of this unit
     int m_health;
+    //max health of this unit
+    int m_maxHealth;
     //the bullet that hurts, this changes depending on the team this unit is on
     string m_damagingBullet;
     //timer for enemy scan
@@ -33,6 +35,8 @@ public class UnitBehaviour : MonoBehaviour {
     float m_maxSearchRange;
     //unit state
     UnitState m_state;
+    //texture for health bar
+    Texture2D m_healthBar;
 
     enum UnitState
     {
@@ -55,10 +59,27 @@ public class UnitBehaviour : MonoBehaviour {
         m_attackSpeed = 2.0f;
         m_attackTimer = 0.0f;
         m_health = 10;
+        m_maxHealth = 10;
         m_enemyInRangeScan = 0.0f;
         m_maxSearchRange = 7.0f;
         m_state = UnitState.IDLE;
-	}
+
+
+        int spriteX = 20;
+        int spriteY = 4;
+        m_healthBar = new Texture2D(spriteX, spriteY);
+        Color[] colors = m_healthBar.GetPixels();
+        Debug.Log(m_healthBar.GetPixels().Length);
+        for (int i = 0; i < spriteX * spriteY; i++)
+        {
+            colors[i].a = 0.88f;
+            colors[i].r = 0.3f;
+            colors[i].g = 0.7f;
+            colors[i].b = 0.3f;
+        }
+        m_healthBar.SetPixels(colors);
+        m_healthBar.Apply(false);
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -207,23 +228,37 @@ public class UnitBehaviour : MonoBehaviour {
             {
                 m_state = UnitState.DEAD;
                 Destroy(gameObject);
+            }else
+            {
+                //fuck off intellisense
+                float proportionRemainingHealth = ((float)m_health / (float)m_maxHealth) * m_healthBar.width;
+
+                Color[] colors = m_healthBar.GetPixels();
+                int textureArea = m_healthBar.width * m_healthBar.height;
+                for (int i = 0; i < textureArea - 1;)
+                {
+                    for (int j = 0; j < m_healthBar.width; j++)
+                    {
+                        colors[j + i].a = 0.88f;
+                        colors[j + i].b = 0.3f;
+                        if (j >= proportionRemainingHealth)
+                        {
+                            colors[j + i].g = 0.3f;
+                            colors[j + i].r = 0.7f;
+                        }else
+                        {
+                            colors[j + i].r = 0.3f;
+                            colors[j + i].g = 0.7f;
+                        }
+                    }
+                    i += m_healthBar.width;
+
+                    
+                }
+                m_healthBar.SetPixels(colors);
+                m_healthBar.Apply(false);
             }
         }
-
-        if (coll.gameObject.tag == "AllyUnit" || coll.gameObject.tag == "EnemyUnit")
-        {
-            Debug.Log("colliding");
-            Vector3 distanceAway = (gameObject.transform.position - coll.transform.position);
-            gameObject.transform.position += distanceAway / 2.0f;
-        }
-
-        ////if this body collides with a unit
-        //if (coll.collider.gameObject.tag == "Unit")
-        //{
-        //    //stop
-        //    m_movementPosition = gameObject.transform.position;
-        //    gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
-        //}
     }
 
     public bool IsUnitDead()
@@ -243,5 +278,15 @@ public class UnitBehaviour : MonoBehaviour {
     public bool IsSelected()
     {
         return m_isSelected;
+    }
+
+    public void OnGUI()
+    {
+        Vector2 spritePos = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+        spritePos.y = Screen.height - spritePos.y - m_healthBar.height * 5;
+        spritePos.x -= m_healthBar.width / 2;
+        Rect r = new Rect(spritePos, new Vector2(m_healthBar.width, m_healthBar.height));
+
+        GUI.DrawTexture(r, m_healthBar);
     }
 }
