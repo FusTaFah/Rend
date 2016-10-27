@@ -17,15 +17,18 @@ public class UI : MonoBehaviour {
 
         Rect r = new Rect(new Vector2(0.0f, 3 * Screen.height / 4.0f), new Vector2(Screen.width, Screen.height / 4.0f));
         tex = new Texture2D((int)r.width, (int)r.height);
-        Color[] colors = new Color[(int)r.width * (int)r.height];
-        for (int i = 0; i < (int)r.height; i++)
+        Color[] colors = tex.GetPixels();
+        Debug.Log(tex.GetPixels().Length);
+        for (int i = 0; i < (int)r.height * (int)r.width; i++)
         {
-            for (int j = 0; j < (int)r.width; j++)
-            {
-                colors[i + j].a = 1.0f;
-            }
+            colors[i].a = 0.88f;
+            colors[i].r = 0.7f;
+            colors[i].g = 0.7f;
+            colors[i].b = 0.7f;
         }
+        Debug.Log((int)r.height * (int)r.width);
         tex.SetPixels(colors);
+        tex.Apply(false);
     }
 	
 	// Update is called once per frame
