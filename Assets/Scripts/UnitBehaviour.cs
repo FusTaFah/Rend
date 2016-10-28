@@ -37,6 +37,8 @@ public class UnitBehaviour : MonoBehaviour {
     UnitState m_state;
     //texture for health bar
     Texture2D m_healthBar;
+    //list of abilities
+    //List<UnitAbility> m_abilities;
 
     enum UnitState
     {
