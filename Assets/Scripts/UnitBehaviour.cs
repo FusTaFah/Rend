@@ -85,11 +85,11 @@ public class UnitBehaviour : MonoBehaviour {
 	void Update () {
         if(m_state != UnitState.DEAD)
         {
+            m_attackTimer += Time.deltaTime;
             if (m_state == UnitState.MOVING)
             {
                 MoveToTarget();
             }
-
             if (m_state == UnitState.ATTACKING)
             {
                 if (m_target != null)
@@ -99,7 +99,7 @@ public class UnitBehaviour : MonoBehaviour {
                         m_bulletManager.SpawnBullet(gameObject.transform.position, Quaternion.identity, m_target, m_pAllegiance ? "AllyBullet" : "EnemyBullet");
                         m_attackTimer = 0.0f;
                     }
-                    m_attackTimer += Time.deltaTime;
+                    
                     if ((m_target.transform.position - gameObject.transform.position).sqrMagnitude > m_attackRange * m_attackRange)
                     {
                         m_state = UnitState.TARGETTING;
