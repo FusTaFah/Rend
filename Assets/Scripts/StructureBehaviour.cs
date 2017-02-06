@@ -11,14 +11,14 @@ public enum UnitType
 
 public class StructureBehaviour : MonoBehaviour {
 
-    
-
     bool m_selected;
-
+    List<UnitAbility> m_abilities;
     Vector3 m_unitRallyPoint;
 
     void Start()
     {
+        m_abilities = new List<UnitAbility>();
+        m_abilities.Add(new UnitAbility("BuildFootman", 5.0f));
         Vector3 positionInFront = gameObject.transform.position + new Vector3(0.0f, 0.0f, 4.0f);
         m_unitRallyPoint = positionInFront + new Vector3(0.0f, 0.0f, 10.0f);
     }
@@ -65,12 +65,8 @@ public class StructureBehaviour : MonoBehaviour {
         return m_selected;
     }
 
-    public List<string> GetAbilityList()
+    public List<UnitAbility> GetAbilityList()
     {
-        List<string> abilities = new List<string>();
-        abilities.Add("fuck");
-        abilities.Add("da");
-        abilities.Add("police");
-        return abilities;
+        return m_abilities;
     }
 }

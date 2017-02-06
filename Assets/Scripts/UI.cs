@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 public class UI : MonoBehaviour {
 
-    List<string> m_abilities;
+    List<UnitAbility> m_abilities;
 
     CameraControls m_cameraReference;
     Texture2D tex;
 
     // Use this for initialization
     void Start () {
-        m_abilities = new List<string>();
+        m_abilities = new List<UnitAbility>();
         m_cameraReference = gameObject.GetComponent<CameraControls>();
 
         Rect r = new Rect(new Vector2(0.0f, 3 * Screen.height / 4.0f), new Vector2(Screen.width, Screen.height / 4.0f));
@@ -56,10 +56,10 @@ public class UI : MonoBehaviour {
 
         //list the abilities
         uint k = 1;
-        foreach(string abilityName in m_abilities)
+        foreach(UnitAbility ability in m_abilities)
         {
             Rect buttonShape = new Rect(new Vector2((k * Screen.width) / 9, 8.0f * Screen.height / 10), new Vector2(Screen.width / 9, Screen.height / 9));
-            if(GUI.Button(buttonShape, abilityName))
+            if(GUI.Button(buttonShape, ability.GetAbilityName() + "\n" + ability.GetCurrentCooldown() + "s"))
             {
                 m_cameraReference.GetSelectedUnit().GetComponent<StructureBehaviour>().SpawnUnit(UnitType.FOOTSOLDIER);
             }

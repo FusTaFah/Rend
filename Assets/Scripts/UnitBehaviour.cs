@@ -38,7 +38,7 @@ public class UnitBehaviour : MonoBehaviour {
     //texture for health bar
     Texture2D m_healthBar;
     //list of abilities
-    //List<UnitAbility> m_abilities;
+    List<UnitAbility> m_abilities;
 
     enum UnitState
     {
@@ -65,7 +65,8 @@ public class UnitBehaviour : MonoBehaviour {
         m_enemyInRangeScan = 0.0f;
         m_maxSearchRange = 7.0f;
         m_state = UnitState.IDLE;
-
+        m_abilities = new List<UnitAbility>();
+        m_abilities.Add(new UnitAbility("Attack", 2.0f));
 
         int spriteX = 20;
         int spriteY = 4;
@@ -88,6 +89,10 @@ public class UnitBehaviour : MonoBehaviour {
         if(m_state != UnitState.DEAD)
         {
             m_attackTimer += Time.deltaTime;
+            foreach(UnitAbility ability in m_abilities)
+            {
+                ability.UpdateCooldown(Time.deltaTime);
+            }
             if (m_state == UnitState.MOVING)
             {
                 MoveToTarget();
@@ -268,13 +273,9 @@ public class UnitBehaviour : MonoBehaviour {
         return m_state == UnitState.DEAD;
     }
 
-    public List<string> GetAbilityList()
+    public List<UnitAbility> GetAbilityList()
     {
-        List<string> abilities = new List<string>();
-        abilities.Add("fuck");
-        abilities.Add("da");
-        abilities.Add("police");
-        return abilities;
+        return m_abilities;
     }
 
     public bool IsSelected()
