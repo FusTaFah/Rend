@@ -65,7 +65,7 @@ public class BulletSpan : MonoBehaviour {
     }
 
     //when the bullet collides with any collision object
-    void OnCollisionEnter(Collision coll)
+    void OnTriggerEnter(Collider coll)
     {
         if((coll.gameObject.tag == "EnemyUnit" && gameObject.tag == "AllyBullet") || (coll.gameObject.tag == "AllyUnit" && gameObject.tag == "EnemyBullet"))
         {
@@ -74,32 +74,5 @@ public class BulletSpan : MonoBehaviour {
             //reset the timer
             timer = 0.0f;
         }
-
-        
-
-
-
-        //if (bulletType == "EnemyBullet")
-        //{
-        //    if (coll.collider.gameObject.GetComponent<UnitBehaviour>().m_pAllegiance)
-        //    {
-        //        //flag this bullet for removal by the manager
-        //        beingUsed = false;
-        //        //reset the timer
-        //        timer = 0.0f;
-        //    }
-        //}
-
-        //else if (bulletType == "AllyBullet")
-        //{
-
-        //    if (!coll.collider.gameObject.GetComponent<UnitBehaviour>().m_pAllegiance)
-        //    {
-        //        //flag this bullet for removal by the manager
-        //        beingUsed = false;
-        //        //reset the timer
-        //        timer = 0.0f;
-        //    }
-        //}
     }
 }

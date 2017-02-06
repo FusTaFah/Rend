@@ -224,7 +224,7 @@ public class UnitBehaviour : MonoBehaviour {
     }
 
     //collision behaviour of this unit
-    public void OnCollisionEnter(Collision coll)
+    public void OnTriggerEnter(Collider coll)
     {
         
         if(coll.gameObject.tag == m_damagingBullet)
