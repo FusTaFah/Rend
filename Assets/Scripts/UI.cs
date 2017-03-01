@@ -61,7 +61,7 @@ public class UI : MonoBehaviour {
             Rect buttonShape = new Rect(new Vector2((k * Screen.width) / 9, 8.0f * Screen.height / 10), new Vector2(Screen.width / 9, Screen.height / 9));
             if(GUI.Button(buttonShape, ability.GetAbilityName() + "\n" + ability.GetCurrentCooldown() + "s"))
             {
-                m_cameraReference.GetSelectedUnit().GetComponent<StructureBehaviour>().SpawnUnit(UnitType.FOOTSOLDIER);
+                ability.UseAbility();
             }
             k++;
         }

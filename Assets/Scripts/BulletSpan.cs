@@ -4,7 +4,7 @@ using System.Collections;
 public class BulletSpan : MonoBehaviour {
 
     //variable to keep track of how long this bullet has been fired for.
-    float timer;
+    public float timer;
     //boolean to say whether or not this bullet is currently in flight
     bool beingUsed;
     //the type of bullet, either AllyBullet or EnemyBullet 

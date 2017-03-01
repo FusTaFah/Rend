@@ -2,45 +2,45 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class UnitBehaviour : MonoBehaviour {
+public abstract class UnitBehaviour : MonoBehaviour {
     //use the event system!
 
     //boolean which states whether or not this unit has been selected
-    bool m_isSelected;
+    protected bool m_isSelected;
     //position the unit is to be moved to
-    Vector3 m_movementPosition;
+    protected Vector3 m_movementPosition;
     //range of this unit's attack
-    float m_attackRange;
+    protected float m_attackRange;
     //distance to target that is considered close enough to stop
-    float m_stoppingRange;
+    protected float m_stoppingRange;
     //projectile firing manager
-    BulletManager m_bulletManager;
+    protected BulletManager m_bulletManager;
     //allegiance of this unit
     public bool m_pAllegiance;
     //attacking target
-    GameObject m_target;
+    protected GameObject m_target;
     //attack speed of this target
-    float m_attackSpeed;
+    protected float m_attackSpeed;
     //time since the last attack
-    float m_attackTimer;
+    protected float m_attackTimer;
     //health of this unit
-    int m_health;
+    protected int m_health;
     //max health of this unit
-    int m_maxHealth;
+    protected int m_maxHealth;
     //the bullet that hurts, this changes depending on the team this unit is on
-    string m_damagingBullet;
+    protected string m_damagingBullet;
     //timer for enemy scan
-    float m_enemyInRangeScan;
+    protected float m_enemyInRangeScan;
     //max distance an idle unit can consider an enemy unit to be in targetting range
-    float m_maxSearchRange;
+    protected float m_maxSearchRange;
     //unit state
-    UnitState m_state;
+    protected UnitState m_state;
     //texture for health bar
-    Texture2D m_healthBar;
+    protected Texture2D m_healthBar;
     //list of abilities
-    List<UnitAbility> m_abilities;
+    protected List<UnitAbility> m_abilities;
 
-    enum UnitState
+    protected enum UnitState
     {
         IDLE,
         ATTACKING,
@@ -49,8 +49,8 @@ public class UnitBehaviour : MonoBehaviour {
         DEAD
     }
 
-    // initialises the fields
-    void Start () {
+    protected void InitializeUnit()
+    {
         m_attackRange = 5.0f;
         m_stoppingRange = 0.5f;
         m_isSelected = false;
@@ -66,7 +66,6 @@ public class UnitBehaviour : MonoBehaviour {
         m_maxSearchRange = 7.0f;
         m_state = UnitState.IDLE;
         m_abilities = new List<UnitAbility>();
-        m_abilities.Add(new UnitAbility("Attack", 2.0f));
 
         int spriteX = 20;
         int spriteY = 4;
@@ -85,7 +84,7 @@ public class UnitBehaviour : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	protected virtual void Update () {
         if(m_state != UnitState.DEAD)
         {
             m_attackTimer += Time.deltaTime;
@@ -224,7 +223,7 @@ public class UnitBehaviour : MonoBehaviour {
     }
 
     //collision behaviour of this unit
-    public void OnTriggerEnter(Collider coll)
+    protected virtual void OnTriggerEnter(Collider coll)
     {
         
         if(coll.gameObject.tag == m_damagingBullet)
@@ -281,6 +280,11 @@ public class UnitBehaviour : MonoBehaviour {
     public bool IsSelected()
     {
         return m_isSelected;
+    }
+
+    public void UseAbility(int ability)
+    {
+        m_abilities[ability].UseAbility();
     }
 
     public void OnGUI()
