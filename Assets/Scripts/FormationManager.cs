@@ -40,6 +40,11 @@ public class FormationManager : MonoBehaviour {
 
     }
 
+    public void UseSelectedUnitAbility(GameObject[] units, Vector3 position)
+    {
+
+    }
+
     //public void MoveSelectedUnits(List<GameObject> units, Vector3 waypoint)
     //{
     //    int leftRight = 1;

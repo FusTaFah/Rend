@@ -142,7 +142,7 @@ public class CameraControls : MonoBehaviour {
 
                 if (m_selectedBuilding != null)
                 {
-                    m_selectedBuilding.GetComponent<StructureBehaviour>().DeSelect();
+                    //m_selectedBuilding.GetComponent<StructureBehaviour>().DeSelect();
                     m_selectedBuilding = null;
                 }
                 if(rch.collider.gameObject.tag == "Building")

@@ -29,6 +29,14 @@ public abstract class UnitAbility{
 
     public abstract void UseAbility();
 
+    public abstract void UseAbility(Vector3 position);
+
+    public abstract void UseAbility(Vector3 position, Vector3 target);
+
+    public abstract void UseAbility(Vector3 position, GameObject target);
+
+    public abstract void UseAbility(GameObject target);
+
     public string GetAbilityName()
     {
         return m_abilityName;
